@@ -1,0 +1,25 @@
+# docker-compose.yml
+version: '3.8'
+services:
+  aws:
+    image: localstack/localstack:0.12.5
+    environment:
+      # Out put error messaging for local development
+      DEBUG: 1
+      # (optional) Docker network that lambdas are reachable by.
+      # This makes it easier for Lambads to be invoked by other
+      # external Docker containers.
+      LAMBDA_DOCKER_NETWORK: my-local-aws-network
+      # Use our local files via Docker volumes to define our Lambdas
+      LAMBDA_REMOTE_DOCKER: 0
+      # Spin up the Lambda module
+      SERVICES: lambda
+    ports:
+      - 4566:4566
+    volumes:
+      # Let LocalStack create new docker containers by giving
+      # LocalStack access to your computer's Docker daemon
+      - /var/run/docker.sock:/var/run/docker.sock
+networks:
+  default:
+    name: my-local-aws-network
