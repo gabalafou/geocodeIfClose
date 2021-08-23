@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/gabalafou/geocodeIfClose/issues"
   },
-  "homepage": "https://github.com/gabalafou/geocodeIfClose#readme"
+  "homepage": "https://github.com/gabalafou/geocodeIfClose#readme",
+  "dependencies": {
+    "geolib": "^3.3.1"
+  }
 }
