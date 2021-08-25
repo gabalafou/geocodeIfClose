@@ -7,7 +7,7 @@ FUNCTION_NAME=geocodeIfClose
 # handler() function defined in index.js
 HANDLER=index.handler
 # We want to run our index.js file using the node runtime
-RUNTIME=nodejs12.x
+RUNTIME=nodejs14.x
 # Our local working directory where index.js is located
 S3_KEY=$(pwd)
 # Delete Lambda (if it already exists) to start with clean slate
