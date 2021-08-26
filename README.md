@@ -28,7 +28,7 @@ Open new terminal and run the following command to create a local environment fi
 cp .env-example.env .env
 ```
 
-Next, create an API key in Google Cloud with access to the Geocoding API and add it to
+Next, create an API key in Google Cloud with access to the Geocoding API and copy it to
 the .env file.
 
 Next, run the following commands to create and test the lambda locally:
