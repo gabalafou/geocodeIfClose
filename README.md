@@ -15,11 +15,8 @@ docker compose up --build aws
 Open new terminal and run the following commands to create and test the lambda locally:
 
 ```bash
-# create lamdba in local simulated aws environment
-./create-local-lambda.bash
-# test lambda
-./invoke.bash
-# response will be output to file: output.json
+./local-lambda-create.bash
+./local-lambda-invoke.bash # result will be output to file: output.json
 ```
 
 # Debug logging
