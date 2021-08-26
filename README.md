@@ -5,8 +5,8 @@ Type definition (TypeScript style):
 
 ```
 (
-  text: string, 
-  locationContext: {latitude: number, longitude: number}, 
+  text: string,
+  locationContext: {latitude: number, longitude: number},
   searchRadius: number
 ) => null | {latitude: number, longitude: number}
 ```
@@ -16,20 +16,22 @@ Type definition (TypeScript style):
 See:
 https://erik-ekberg.medium.com/how-to-test-aws-lambda-locally-6f07bd36abd9
 
-Open terminal and run the following command to start up local aws simulator (localstack):
+Open terminal and run the following command to start up local aws simulator
+(localstack):
 
 ```bash
 docker compose up --build aws
 ```
 
-Open new terminal and run the following command to create a local environment file:
+Open new terminal and run the following command to create a local environment
+file:
 
 ```bash
 cp .env-example.env .env
 ```
 
-Next, create an API key in Google Cloud with access to the Geocoding API and copy it to
-the .env file.
+Next, create an API key in Google Cloud with access to the Geocoding API and
+copy it to the .env file.
 
 Next, run the following commands to create and test the lambda locally:
 
@@ -37,6 +39,9 @@ Next, run the following commands to create and test the lambda locally:
 ./local-lambda-create.bash
 ./local-lambda-invoke.bash # result will be output to file: output.json
 ```
+
+Note that you can modify the JSON file `local-lambda-invoke.json` and then
+re-run the invoke.bash script to test the lambda with different inputs.
 
 # Debug logging
 
