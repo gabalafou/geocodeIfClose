@@ -1,3 +1,6 @@
+AWS lambda that takes an area (as a geopoint and a radius) and some text and
+returns a geocoded address from within that area (if any)
+
 # Local Dev
 
 See:
@@ -13,3 +16,8 @@ docker compose up --build aws
 ./invoke.bash
 # response will be output to file: output.json
 ```
+
+# Debug logging
+
+Debug logging can be turned on by setting `DEBUG=debug` in the lambda
+environment, or by passing `debug=debug` when invoking the lambda.

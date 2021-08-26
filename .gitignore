@@ -105,3 +105,6 @@ dist
 
 # macOS
 .DS_Store
+
+# Output from aws lambda invoke
+output.json

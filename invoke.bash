@@ -1,7 +1,7 @@
 # ./invoke.bash
 ENDPOINT=http://localhost:4566
 FUNCTION_NAME=geocodeIfClose
-PAYLOAD='{ "myJsonData": "true" }'
+PAYLOAD=`cat invoke.json`
 aws lambda invoke \
   --cli-binary-format raw-in-base64-out \
   --function-name ${FUNCTION_NAME} \

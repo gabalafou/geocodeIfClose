@@ -10,12 +10,15 @@ HANDLER=index.handler
 RUNTIME=nodejs14.x
 # Our local working directory where index.js is located
 S3_KEY=$(pwd)
+# Load environment variables so they can be accessed below
+source .env
 # Delete Lambda (if it already exists) to start with clean slate
 aws --endpoint-url ${ENDPOINT} lambda delete-function \
   --function-name ${FUNCTION_NAME}
 # Create Lambda
 aws --endpoint-url ${ENDPOINT} lambda create-function \
   --code S3Bucket="__local__",S3Key="${S3_KEY}" \
+  --environment Variables={GOOGLE_CLOUD_API_KEY=$GOOGLE_CLOUD_API_KEY} \
   --function-name ${FUNCTION_NAME} \
   --handler ${HANDLER} \
   --role value-does-not-matter \
