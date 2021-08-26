@@ -22,7 +22,16 @@ Open terminal and run the following command to start up local aws simulator (loc
 docker compose up --build aws
 ```
 
-Open new terminal and run the following commands to create and test the lambda locally:
+Open new terminal and run the following command to create a local environment file:
+
+```bash
+cp .env-example.env .env
+```
+
+Next, create an API key in Google Cloud with access to the Geocoding API and add it to
+the .env file.
+
+Next, run the following commands to create and test the lambda locally:
 
 ```bash
 ./local-lambda-create.bash
