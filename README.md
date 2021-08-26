@@ -6,10 +6,15 @@ returns a geocoded address from within that area (if any)
 See:
 https://erik-ekberg.medium.com/how-to-test-aws-lambda-locally-6f07bd36abd9
 
+Open terminal and run the following command to start up local aws simulator (localstack):
+
 ```bash
 docker compose up --build aws
+```
 
-# open new terminal
+Open new terminal and run the following commands to create and test the lambda locally:
+
+```bash
 # create lamdba in local simulated aws environment
 ./create-local-lambda.bash
 # test lambda
