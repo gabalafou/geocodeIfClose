@@ -1,5 +1,15 @@
 AWS lambda that takes an area (as a geopoint and a radius) and some text and
-returns a geocoded address from within that area (if any)
+returns a geocoded address from within that area (if any).
+
+Type definition (TypeScript style):
+
+```
+(
+  text: string, 
+  locationContext: {latitude: number, longitude: number}, 
+  searchRadius: number
+) => null | {latitude: number, longitude: number}
+```
 
 # Local Dev
 
