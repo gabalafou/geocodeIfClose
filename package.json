@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/gabalafou/geocodeIfClose#readme",
   "dependencies": {
+    "axios": "^0.21.1",
     "geolib": "^3.3.1"
   }
 }
