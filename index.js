@@ -1,8 +1,27 @@
 const geolib = require("geolib");
 const axios = require("axios");
+const { KinesisClient, PutRecordsCommand } = require("@aws-sdk/client-kinesis");
+const { PostCoordinateSource } = require("@threatminder-system/tm-core");
+const os = require("os");
+const getKinesisMessages = require("./getKinesisMessages");
 const debugLogger = require("debug");
 const debug = debugLogger("debug");
 const geocodingApiKey = process.env.GOOGLE_CLOUD_API_KEY;
+
+const agentStampProperties = {
+  name: "lambda:geoclode-if-close",
+  version: "0.0.0",
+};
+
+const kinesisClientConfig = {
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+  region: process.env.AWS_REGION,
+};
+const kinesisClient = new KinesisClient(kinesisClientConfig);
+const kinesisStreamName = process.env.GEOCODE_IF_CLOSE_PUB_STREAM;
 
 /**
  * Take some free form text that may designate an address given a particular
@@ -52,7 +71,6 @@ async function geocodeIfClose(text, locationContext, searchRadius) {
       searchRadius
     )
   );
-
 
   // If there are results after filtering, return the first one (i.e., the one
   // Google thinks is most relevant), otherwise return null
@@ -106,26 +124,68 @@ function areInputsValid({ text, locationContext, searchRadius }) {
   return true;
 }
 
-exports.handler = async (event) => {
-  const { text, locationContext, searchRadius } = event;
-
-  if (event.debug) {
-    debugLogger.enable("debug");
-  }
-
-  debug("Check inputs", { text, locationContext, searchRadius });
-  if (!areInputsValid(event)) {
-    const response = {
-      statusCode: 400,
-    };
-    return response;
-  }
-  debug("Inputs valid");
-
-  const maybeLatLng = await geocodeIfClose(text, locationContext, searchRadius);
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify(maybeLatLng),
+function encodeKinesisRecord(partitionKey, message) {
+  return {
+    Data: JSON.stringify(message),
+    PartitionKey: partitionKey,
   };
-  return response;
+}
+
+exports.handler = async (event, context, testRun = false) => {
+  debug("Event:", event);
+
+  const records = event.Records;
+  const numberOfRecords = records.length;
+  debug("Records:", numberOfRecords);
+
+  const nextRecords = [];
+
+  let messageCount = 0;
+  for (const [partitionKey, message] of getKinesisMessages(records)) {
+    debug(
+      "======================================================================================"
+    );
+    debug(`Message #${++messageCount}/${numberOfRecords}`);
+
+    // TODO add more logging, like what exists in the filter and db-doc lambdas
+
+    const text = message.document.content;
+    const locationContext = message.document.coordinates;
+    const searchRadius = process.env.SEARCH_RADIUS;
+
+    if (areInputsValid({ text, locationContext, searchRadius })) {
+      const result = await geocodeIfClose(text, locationContext, searchRadius);
+      if (result) {
+        const { latitude, longitude } = result;
+        message.document.coordinates = "{" + latitude + "," + longitude + "}";
+        debug("Updated coordinates:", message.document.coordinates);
+        message.document.coordinateSource =
+          PostCoordinateSource.GoogleGeocodingApi;
+        debug("Updated coordinateSource:", message.document.coordinateSource);
+      }
+    }
+
+    const agentStamp = {
+      ...agentStampProperties,
+      processedAt: Date.now(),
+      hostname: os.hostname(),
+    };
+    message.processLog.push(agentStamp);
+    const updatedRecord = encodeKinesisRecord(partitionKey, message);
+    nextRecords.push(updatedRecord);
+  }
+
+  if (!testRun) {
+    const params = {
+      Records: nextRecords,
+      StreamName: kinesisStreamName,
+    };
+    const command = new PutRecordsCommand(params);
+    // should there be a try/catch around this?
+    await kinesisClient.send(command);
+  }
+
+  return {
+    records: nextRecords,
+  };
 };
