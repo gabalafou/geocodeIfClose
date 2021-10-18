@@ -152,8 +152,16 @@ exports.handler = async (event, context, testRun = false) => {
     const text = message.document.content;
     const locationContext = message.document.coordinates;
     const searchRadius = process.env.SEARCH_RADIUS;
+    const { coordinateSource } = message.document;
 
-    if (areInputsValid({ text, locationContext, searchRadius })) {
+    if (
+      coordinateSource ===
+      PostCoordinateSource.TmFilterOptions && areInputsValid({
+        text,
+        locationContext,
+        searchRadius,
+      })
+    ) {
       const result = await geocodeIfClose(text, locationContext, searchRadius);
       if (result) {
         const { latitude, longitude } = result;
