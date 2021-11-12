@@ -1,4 +1,4 @@
-export default function* getKinesisMessages(records) {
+module.exports = function* getKinesisMessages(records) {
   for (const record of records) {
     try {
       const jsonString = Buffer.from(record.kinesis.data, "base64");
