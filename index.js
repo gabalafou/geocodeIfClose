@@ -189,8 +189,12 @@ exports.handler = async (event, context, testRun = false) => {
       StreamName: kinesisStreamName,
     };
     const command = new PutRecordsCommand(params);
-    // should there be a try/catch around this?
-    await kinesisClient.send(command);
+    try {
+      const kinesisResponse = await kinesisClient.send(command);
+      console.log("Kinesis Response:", kinesisResponse);
+    } catch (err) {
+      console.log("Error sending Kinesis PutRecordsCommand:", err);
+    }
   }
 
   return {
