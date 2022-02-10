@@ -113,14 +113,11 @@ function areInputsValid({ text, locationContext, searchRadius }) {
   if (!text | !locationContext | !searchRadius) {
     return false;
   }
-  if (
-    !text.length |
-    !(searchRadius > 0)
-  ) {
+  if (!text.length | !(searchRadius > 0)) {
     return false;
   }
   try {
-    parseMessageCoordinates(locationContext)
+    parseMessageCoordinates(locationContext);
   } catch (err) {
     return false;
   }
@@ -128,8 +125,10 @@ function areInputsValid({ text, locationContext, searchRadius }) {
 }
 
 function parseMessageCoordinates(bracketTuple) {
-  const [ lat, long ] = JSON.parse(bracketTuple.replace('{', '[').replace('}', ']'));
-  return [ lat, long ];
+  const [lat, long] = JSON.parse(
+    bracketTuple.replace("{", "[").replace("}", "]")
+  );
+  return [lat, long];
 }
 
 function encodeKinesisRecord(partitionKey, message) {
@@ -163,14 +162,14 @@ exports.handler = async (event, context, testRun = false) => {
     const { coordinateSource } = message.document;
 
     if (
-      coordinateSource ===
-      PostCoordinateSource.TmFilterOptions && areInputsValid({
+      coordinateSource === PostCoordinateSource.TmFilterOptions &&
+      areInputsValid({
         text,
         locationContext,
         searchRadius,
       })
     ) {
-      const [ latitude, longitude ] = parseMessageCoordinates(locationContext);
+      const [latitude, longitude] = parseMessageCoordinates(locationContext);
       const formattedContext = { latitude, longitude };
       const result = await geocodeIfClose(text, formattedContext, searchRadius);
       if (result) {
