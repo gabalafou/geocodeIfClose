@@ -1,6 +1,6 @@
 {
   "debug": true,
   "text": "Free ice cream at Broadway and W 32nd St",
-  "locationContext": {"latitude": 40.754932, "longitude": -73.984016},
+  "locationContext": "{40.754932, -73.984016}",
   "searchRadius": 32186.9
 }

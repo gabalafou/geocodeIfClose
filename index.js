@@ -115,13 +115,21 @@ function areInputsValid({ text, locationContext, searchRadius }) {
   }
   if (
     !text.length |
-    !locationContext.latitude |
-    !locationContext.longitude |
     !(searchRadius > 0)
   ) {
     return false;
   }
+  try {
+    parseMessageCoordinates(locationContext)
+  } catch (err) {
+    return false;
+  }
   return true;
+}
+
+function parseMessageCoordinates(bracketTuple) {
+  const [ lat, long ] = JSON.parse(bracketTuple.replace('{', '[').replace('}', ']'));
+  return [ lat, long ];
 }
 
 function encodeKinesisRecord(partitionKey, message) {
@@ -162,10 +170,12 @@ exports.handler = async (event, context, testRun = false) => {
         searchRadius,
       })
     ) {
-      const result = await geocodeIfClose(text, locationContext, searchRadius);
+      const [ latitude, longitude ] = parseMessageCoordinates(locationContext);
+      const formattedContext = { latitude, longitude };
+      const result = await geocodeIfClose(text, formattedContext, searchRadius);
       if (result) {
         const { latitude, longitude } = result;
-        message.document.coordinates = "{" + latitude + "," + longitude + "}";
+        message.document.coordinates = "{" + latitude + ", " + longitude + "}";
         debug("Updated coordinates:", message.document.coordinates);
         message.document.coordinateSource =
           PostCoordinateSource.GoogleGeocodingApi;
